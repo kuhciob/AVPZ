@@ -1,0 +1,87 @@
+﻿@model SRS
+@{
+    ViewData["Title"] = "Моніоринг Ризиків";
+}
+@functions{
+    public string GetPropString(double val)
+    {
+        return val < 0.1 ? "Дуже низька" :
+            val >= 0.1 && val < 0.25 ? "Низька" :
+            val >= 0.25 && val < 0.5 ? "Середня" :
+            val >= 0.5 && val < 0.75 ? "Висока" :
+            "Дуже висока";
+    }
+    public string GetPrio(double val, SRS model)
+    {
+        return val >= model.minVRER2 && val < model.minVRER2 + model.mpr2 ? "Низький" :
+            val >= model.minVRER2 + model.mpr2 && val < model.minVRER2 + 2 * model.mpr2 ? "Середній" :
+            val >= model.minVRER2 + 2 * model.mpr2 && val <= model.maxVRER2 ? "Високий" : "Невизначений";
+    }
+}
+<h3>Моніторинг ризиків</h3>
+<div class="text-center">
+    <form id="MyForm" style="text-align:left" role="form" asp-controller="Risk" asp-action="RiskMonitor">
+        <div class="row">
+            <div class="col-10">
+                <table class="table" style="text-align:left">
+                    <thead>
+                        <tr>
+                            <th scope="col">№</th>
+                            <th scope="col">Ризикові події</th>
+                            @for (int i = 1; i <= 10; ++i)
+                            {
+                                <th scope="col">@i</th>
+                            }
+                        <th scope="col">ERPERp(ймовірність настання)</th>
+                            <th scope="col">Збитки</th>
+                            <th scope="col">EVRER(Величина ризику)</th>
+                            <th scope="col">Пріорітет</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.AllRiskPer2.Count; ++i)
+                        {
+                            <tr>
+                                <th scope="row">@(i+1)</th>
+                                <td>@Model.AllRiskDescr[i]</td>
+                                @for (int j = 0; j < 10; ++j)
+                                {
+                                    <td style="width: 20px;text-align:right">@Html.EditorFor(m => m.AllRiskPer2[i][j])</td>
+                                }
+
+                                <td>@Math.Round(Model.ERPER[i], 2) (@GetPropString(Model.ERPER[i]))</td>
+                                <td style="width: 20px;text-align:right">@Html.EditorFor(m => m.ELRERp[i])</td>
+                                <td>@Math.Round(Model.EVRER[i], 2)</td>
+                                <td>@GetPrio(Model.EVRER[i], Model)</td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+            </div>
+            <div class="col-2">
+                <button> Розрахувати</button>
+
+                <fieldset class="border p-4">
+                    <legend class="w-auto"> Формалізована модель ймовірностей виникнення ризикових подій:</legend>
+                    <h5>Технічні ризики:@Math.Round(Model.pTCr2 * 100, 2)</h5>
+                    <h5>Фінансові ризики:@Math.Round(Model.pCCr2 * 100, 2)</h5>
+                    <h5>Планові ризики:@Math.Round(Model.pPCr2 * 100, 2)</h5>
+                    <h5>Ризмки управління:@Math.Round(Model.pMCr2 * 100, 2)</h5>
+                    <h5><b>Загалом:@Math.Round(Model.sumPRPs2 * 100, 2)</b></h5>
+                </fieldset>
+                <fieldset class="border p-4">
+                    <legend class="w-auto">
+                        Встановлення рівня пріоритету пом'якшення та ранжування ризиків за пріоритетами:
+                    </legend>
+                    <h5>Максимальний VRER:@Math.Round(Model.maxVRER2, 2)</h5>
+                    <h5>Мінімальний елемент VRER:@Math.Round(Model.minVRER2, 2)</h5>
+                    <h5>[@Math.Round(Model.minVRER2, 2); @(Math.Round(Model.minVRER2 + @Model.mpr2,2))) - Низький</h5>
+                    <h5>[@Math.Round(Model.minVRER2 + @Model.mpr2, 2); @Math.Round(Model.minVRER2 + 2 * Model.mpr2, 2)) - Середній</h5>
+                    <h5>[@Math.Round(Model.minVRER2 + 2 * Model.mpr2, 2); @Math.Round(Model.maxVRER2, 2)] - Високий</h5>
+                </fieldset>
+            </div>
+        </div>
+    </form>
+</div>

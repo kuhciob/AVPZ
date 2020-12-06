@@ -1,0 +1,40 @@
+﻿@model SRS
+@{
+    ViewData["Title"] = "Усунення ризиків";
+}
+
+<h3>Планування ризиків</h3>
+<div class="text-center">
+    <form id="MyForm" style="text-align:left" role="form" asp-controller="Risk" asp-action="RiskPlan">
+        <div class="row">
+            <div class="col">
+                <button>Застосувати</button>
+                <table class="table" style="text-align:left">
+                    <thead>
+                        <tr>
+                            <th scope="col">№</th>
+                            <th scope="col">Ризикові події</th>
+                            <th scope="col">Можливе вирішення</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.AllRiskDescr.Count; ++i)
+                        {
+                            <tr>
+                                <th scope="row">@(i+1)</th>
+                                <td>@Model.AllRiskDescr[i]</td>
+
+                                <td>@Html.DropDownListFor(m => m.EVERp[i], new SelectList(Model.EVMeasures),"")</td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+            </div>
+           
+        </div>
+    </form>
+</div>
+
+

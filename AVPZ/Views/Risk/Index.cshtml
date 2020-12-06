@@ -1,0 +1,99 @@
+﻿@model SRS
+@{
+    ViewData["Title"] = "Джерела появи ризиків";
+}
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+            <a class="nav-link text-dark" asp-area="" asp-controller="Risk" asp-action="Index">Джерела появи ризиків ризиків</a>
+            <a class="nav-link text-dark" asp-area="" asp-controller="Risk" asp-action="Index2">Потенційні ризикові події</a>
+        </div>
+    </div>
+</nav>
+<div class="text-center">
+    <form id="MyForm" style="text-align:left" role="form" asp-controller="Risk" asp-action="Index">
+        <div class="row">
+            <div class="col-lg-5">
+                @{
+                    <fieldset class="border p-4">
+                        <legend  class="w-auto">Технічні ризики:</legend>
+                        @for (int i = 0; i < Model.Trs.Length; ++i)
+                        {
+                            <div class="form-group">
+                                @Html.CheckBoxFor(m => m.Trs[i])
+                                <label asp-for="@Model.Trs[i]">@Model.TechRiskSource[i]</label>
+                            </div>
+                        }
+                    </fieldset>
+                    <fieldset class="border p-4">
+                        <legend class="w-auto">Фінансові ризики:</legend>
+                        @for (int i = 0; i < Model.Crs.Length; ++i)
+                        {
+                            <div class="form-group">
+                                @Html.CheckBoxFor(m => m.Crs[i])
+                                <label asp-for="@Model.Crs[i]">@Model.CostRiskSource[i]</label>
+                            </div>
+                        }
+                    </fieldset>
+                }
+
+            </div>
+
+            <div class="col-lg-5">
+                <fieldset class="border p-4">
+                    <legend class="w-auto"> Ризики управління:</legend>
+                    @for (int i = 0; i < Model.Prs.Length; ++i)
+                    {
+                        <div class="form-group">
+                            @Html.CheckBoxFor(m => m.Prs[i])
+                            <label asp-for="@Model.Prs[i]">@Model.PlanRiskSource[i]</label>
+                        </div>
+                    }
+                </fieldset>
+                <fieldset class="border p-4">
+                    <legend class="w-auto"> Ризики управління:</legend>
+                    @for (int i = 0; i < Model.Mrs.Length; ++i)
+                    {
+                        <div class="form-group">
+                            @Html.CheckBoxFor(m => m.Mrs[i])
+                            <label asp-for="@Model.Mrs[i]">@Model.RealizationManageRiskSource[i]</label>
+                        </div>
+                    }
+                </fieldset>
+            </div>
+            <div class="col-lg-2">
+                <button> Розрахувати</button>
+                <button type="button" onclick="FillAll()"> Вибрати усі</button>
+                <script>
+                    function FillAll() {
+                        $("input:checkbox").prop('checked', true);
+                    }
+                </script>
+                <fieldset class="border p-4">
+                    <legend class="w-auto"> Фмовірності появи джерел:</legend>
+                    <h5>Технічні ризики:@Math.Round(Model.TCrs * 100, 2)</h5>
+                    <h5>Фінансові ризики:@Math.Round(Model.CCrs * 100, 2)</h5>
+                    <h5>Планові ризики:@Math.Round(Model.PCrs * 100, 2)</h5>
+                    <h5>Ризмки управління:@Math.Round(Model.MCrs * 100, 2)</h5>
+                    <h5><b>Загалом:@Math.Round(Model.sumRrs * 100, 2)</b></h5>
+                </fieldset>
+            </div>
+        </div>
+    </form>
+
+    <script>
+        (function () {
+
+            let inputs = document.getElementsByTagName('input');
+            for (let i = 0; i < inputs.length; ++i) {
+                console.log(inputs[i]);
+                inputs[i].addeventlistener("change", function () {
+
+                    document.getElementById("MyForm").dispatchEvent("submit");
+                });
+            }
+        })();
+
+    </script>
+
+</div>
